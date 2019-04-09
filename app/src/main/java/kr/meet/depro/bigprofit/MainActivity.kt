@@ -9,6 +9,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -17,8 +18,13 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.tedpark.tedpermission.rx2.TedRx2Permission
 import io.reactivex.disposables.CompositeDisposable
+import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
+import kr.meet.depro.bigprofit.model.Mart
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), OnMapReadyCallback {
 
@@ -51,6 +57,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
                                     { result ->
                                         if (result.isGranted) {
                                             Toast.makeText(this, "위치권한이 승인 되었습니다.", Toast.LENGTH_SHORT).show()
+
                                         } else {
                                             finish()
                                         }
@@ -62,17 +69,29 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     }
 
     override fun start() {
-        val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+
     }
 
     private fun initLocation() {
+        val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             initPermission()
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 10f, locationListener)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 10f, locationListener)
+        ApiClient.kakaoApi.getMarts().enqueue(object : Callback<Mart> {
+            override fun onResponse(call: Call<Mart>, response: Response<Mart>) {
+                if (response.isSuccessful) {
+
+                }
+            }
+
+            override fun onFailure(call: Call<Mart>, t: Throwable) {
+
+            }
+        })
     }
 
     private val locationListener = object : LocationListener {
