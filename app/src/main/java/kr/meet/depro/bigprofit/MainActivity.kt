@@ -43,6 +43,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
     private lateinit var map: GoogleMap
     private val markerList = ArrayList<Marker>()
+    private lateinit var beforeMarker: Marker
 
     override fun initView() {
         initPermission()
@@ -180,6 +181,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
     override fun onMarkerClick(marker: Marker?): Boolean {
         var icon: BitmapDescriptor? = null
+        if (::beforeMarker.isInitialized) {
+            when {
+                beforeMarker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
+                beforeMarker.tag == "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_basic)
+                beforeMarker.tag == "세븐일레븐" -> icon =
+                    BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
+            }
+            beforeMarker.setIcon(icon)
+        }
         marker?.let {
             when {
                 marker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
@@ -187,6 +197,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
                 marker.tag == "세븐일레븐" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_click)
             }
             marker.setIcon(icon)
+            beforeMarker = marker
         }
         return true
     }
