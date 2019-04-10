@@ -10,6 +10,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -24,10 +25,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.tedpark.tedpermission.rx2.TedRx2Permission
 import io.reactivex.disposables.CompositeDisposable
 import kr.meet.depro.bigprofit.api.ApiClient
@@ -164,25 +162,31 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
     private fun addMarker(markerItem: MarkerItem, type: String) {
         val position = LatLng(markerItem.lat, markerItem.lon)
+        var icon: BitmapDescriptor? = null
+        when (type) {
+            "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
+            "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_basic)
+            "세븐일레븐" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
+        }
 
         val marker = map.addMarker(
             MarkerOptions()
                 .position(position)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_non_click))
+                .icon(icon)
         )
         marker.tag = type
         markerList.add(marker)
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {
+        var icon: BitmapDescriptor? = null
         marker?.let {
-            if (marker.tag == "GS25") {
-
-            } else if (marker.tag == "CU") {
-
-            } else if (marker.tag == "세븐일레븐") {
-
+            when {
+                marker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
+                marker.tag == "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_click)
+                marker.tag == "세븐일레븐" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_click)
             }
+            marker.setIcon(icon)
         }
         return true
     }
