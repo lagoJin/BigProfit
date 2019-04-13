@@ -2,25 +2,16 @@ package kr.meet.depro.bigprofit
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
+import com.depromeet.dog1plus1benefit.pagerAdapter
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -28,10 +19,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.tedpark.tedpermission.rx2.TedRx2Permission
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.activity_main.*
 import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
 import kr.meet.depro.bigprofit.model.Mart
+import kr.meet.depro.bigprofit.model.product
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,9 +38,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     private val markerList = ArrayList<Marker>()
     private lateinit var beforeMarker: Marker
 
+    private val adapter by lazy{ pagerAdapter(supportFragmentManager) }
+    private var productList = mutableListOf<product>()
     override fun initView() {
         initPermission()
         initLocation()
+        initViewPager()
     }
 
     override fun start() {
@@ -204,4 +200,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
     //endregion
 
+    //region Inhan 하단 뷰
+    fun initViewPager(){
+        viewPager.adapter = MainActivity@adapter
+        viewPager.offscreenPageLimit = 3
+        tabs.shouldExpand = true
+
+        tabs.setViewPager(viewPager)
+
+    }
+
+    //endregion
 }
