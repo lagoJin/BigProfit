@@ -11,7 +11,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
 import android.widget.Toast
-import com.depromeet.dog1plus1benefit.pagerAdapter
+import kr.meet.depro.bigprofit.adapter.PagerAdapter
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -24,12 +24,13 @@ import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
 import kr.meet.depro.bigprofit.model.Mart
-import kr.meet.depro.bigprofit.model.product
+import kr.meet.depro.bigprofit.model.Product
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), OnMapReadyCallback,
+class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
+    OnMapReadyCallback,
     GoogleMap.OnMarkerClickListener {
 
     //https://github.com/umano/AndroidSlidingUpPanel
@@ -38,8 +39,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     private val markerList = ArrayList<Marker>()
     private lateinit var beforeMarker: Marker
 
-    private val adapter by lazy{ pagerAdapter(supportFragmentManager) }
-    private var productList = mutableListOf<product>()
+    private val adapter by lazy { PagerAdapter(supportFragmentManager) }
+    private var productList = mutableListOf<Product>()
     override fun initView() {
         initPermission()
         initLocation()
@@ -201,13 +202,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     //endregion
 
     //region Inhan 하단 뷰
-    fun initViewPager(){
-        viewPager.adapter = MainActivity@adapter
-        viewPager.offscreenPageLimit = 3
-        tabs.shouldExpand = true
-
-        tabs.setViewPager(viewPager)
-
+    private fun initViewPager() {
+        dataBinding.viewPager.adapter = adapter
+        dataBinding.viewPager.offscreenPageLimit = 3
+        dataBinding.tabs.shouldExpand = true
+        dataBinding.tabs.setViewPager(viewPager)
     }
 
     //endregion

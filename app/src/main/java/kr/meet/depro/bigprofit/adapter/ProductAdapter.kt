@@ -1,4 +1,4 @@
-package com.depromeet.dog1plus1benefit
+package kr.meet.depro.bigprofit.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.product_item.view.*
 import kr.meet.depro.bigprofit.R
-import kr.meet.depro.bigprofit.model.product
+import kr.meet.depro.bigprofit.model.Product
 
-class productAdapter : RecyclerView.Adapter<productAdapter.productViewHolder>() {
-    var products: MutableList<product> = mutableListOf(product("초코우유","1,500원", true,"CU","http://gs25appimg.gsretail.com/imgsvr/item/GD_8809490180108_001.jpg"),
-        product("바나나맛우유","1,300원", true,"GS","http://gs25appimg.gsretail.com/imgsvr/item/GD_8801056096656_003.jpg"),
-        product("파워에이드","1,800원", true,"7-ELEVEN","http://gs25appimg.gsretail.com/imgsvr/item/GD_8801019608988_001.jpg"),
-        product("붕어싸만코","1,000원", false,"GS","http://gs25appimg.gsretail.com/imgsvr/item/GD_8801094793104_001.jpg"))
+class ProductAdapter : RecyclerView.Adapter<ProductAdapter.productViewHolder>() {
+    var products: MutableList<Product> = mutableListOf(Product("초코우유","1,500원", true,"CU","http://gs25appimg.gsretail.com/imgsvr/item/GD_8809490180108_001.jpg"),
+        Product("바나나맛우유","1,300원", true,"GS","http://gs25appimg.gsretail.com/imgsvr/item/GD_8801056096656_003.jpg"),
+        Product("파워에이드","1,800원", true,"7-ELEVEN","http://gs25appimg.gsretail.com/imgsvr/item/GD_8801019608988_001.jpg"),
+        Product("붕어싸만코","1,000원", false,"GS","http://gs25appimg.gsretail.com/imgsvr/item/GD_8801094793104_001.jpg"))
     //임시로 하드코딩함
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): productViewHolder {
         return productViewHolder(p0)

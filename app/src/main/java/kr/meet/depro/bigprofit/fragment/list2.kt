@@ -1,4 +1,4 @@
-package com.depromeet.dog1plus1benefit
+package kr.meet.depro.bigprofit.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
