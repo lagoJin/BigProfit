@@ -178,6 +178,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
 
     override fun onMarkerClick(marker: Marker?): Boolean {
         var icon: BitmapDescriptor? = null
+
         if (::beforeMarker.isInitialized) {
             when {
                 beforeMarker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
@@ -187,11 +188,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
             }
             beforeMarker.setIcon(icon)
         }
+        //클릭 했을 때
         marker?.let {
             when {
-                marker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
-                marker.tag == "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_click)
-                marker.tag == "세븐일레븐" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_click)
+                marker.tag == "GS25" -> {
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
+                    //데이터 받고 어댑터 새로그려주기
+                }
+                marker.tag == "CU" -> {
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_click)
+                }
+                marker.tag == "세븐일레븐" -> {
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_click)
+                }
             }
             marker.setIcon(icon)
             beforeMarker = marker

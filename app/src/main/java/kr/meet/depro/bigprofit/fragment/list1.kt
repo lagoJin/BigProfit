@@ -18,8 +18,8 @@ class list1 : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val listitems = inflater.inflate(R.layout.fragment_list1, container, false)
-        val rv1pl1 = listitems.findViewById(R.id.recyclerView1pl1) as RecyclerView
+        val listItems = inflater.inflate(R.layout.fragment_list1, container, false)
+        val rv1pl1 = listItems.findViewById(R.id.recyclerView1pl1) as RecyclerView
         rv1pl1.adapter = ProductAdapter()
         rv1pl1.layoutManager = GridLayoutManager(activity,2)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -28,6 +28,6 @@ class list1 : Fragment() {
                     Log.i("scroll","스크롤 끝")
             }
         }
-        return listitems
+        return listItems
     }
 }
