@@ -7,11 +7,13 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v4.app.ActivityCompat
 import android.util.Log
+import android.view.View
 import android.widget.Toast
-import kr.meet.depro.bigprofit.adapter.PagerAdapter
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -20,6 +22,7 @@ import com.google.android.gms.maps.model.*
 import com.tedpark.tedpermission.rx2.TedRx2Permission
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
+import kr.meet.depro.bigprofit.adapter.PagerAdapter
 import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
@@ -176,6 +179,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
         markerList.add(marker)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onMarkerClick(marker: Marker?): Boolean {
         var icon: BitmapDescriptor? = null
 
@@ -190,19 +194,24 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
         }
         //클릭 했을 때
         marker?.let {
+            if(csBar.visibility == View.GONE) csBar.visibility = View.VISIBLE
             when {
                 marker.tag == "GS25" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
+                    csBar.setBackgroundColor(getColor(R.color.gsRed))
                     //데이터 받고 어댑터 새로그려주기
                 }
                 marker.tag == "CU" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_click)
+                    csBar.setBackgroundColor(getColor(R.color.cuPurple))
                 }
                 marker.tag == "세븐일레븐" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_click)
+                    csBar.setBackgroundColor(getColor(R.color.sevenGreen))
                 }
             }
             marker.setIcon(icon)
+            dataBinding.csBar.setText(marker.tag.toString())
             beforeMarker = marker
         }
         return true

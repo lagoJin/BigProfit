@@ -3,5 +3,11 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="backGroundLightGray">#8A8A8A</color>
+    <color name="backGroundLightGray">#ececec</color>
+    <!--편의점 색조합-->
+    <color name="emartYellow">#ffb717</color>
+    <color name="cuPurple">#8c31aa</color>
+    <color name="ministopBlue">#15449d</color>
+    <color name="gsRed">#f15822</color>
+    <color name="sevenGreen">#1a8f28</color>
 </resources>
