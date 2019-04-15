@@ -7,26 +7,23 @@ import kr.meet.depro.bigprofit.fragment.list1
 import kr.meet.depro.bigprofit.fragment.list2
 import kr.meet.depro.bigprofit.fragment.list_all
 
-class PagerAdapter : FragmentPagerAdapter{
+class PagerAdapter(fragmentManager: FragmentManager) : FragmentPagerAdapter(fragmentManager) {
 
-    var page1 : Fragment = list1()
-    var page2 : Fragment = list2()
-    var pageAll : Fragment = list_all()
-    var pageArray : ArrayList<Fragment> = arrayListOf(page1,page2,pageAll)
-    var pageTitleArray : ArrayList<String> = arrayListOf("1+1","2+1","ALL")
+    var page1: Fragment = list1()
+    var page2: Fragment = list2()
+    var pageAll: Fragment = list_all()
+    var pageArray: ArrayList<Fragment> = arrayListOf(page1, page2, pageAll)
+    var pageTitleArray: ArrayList<String> = arrayListOf("1+1", "2+1", "ALL")
 
-
-    constructor(fm : FragmentManager) : super(fm){
+    override fun getItem(position: Int): Fragment? {
+        return pageArray[position]
     }
 
-    override fun getItem(p0: Int): Fragment? {
-        return pageArray.get(p0)
-    }
     override fun getCount(): Int {
         return pageArray.size
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return pageTitleArray.get(position)
+        return pageTitleArray[position]
     }
 }
