@@ -10,6 +10,8 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
+import android.support.design.widget.AppBarLayout
+import android.support.design.widget.CoordinatorLayout
 import android.support.v4.app.ActivityCompat
 import android.util.Log
 import android.view.View
@@ -32,8 +34,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
-    OnMapReadyCallback,
+class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), OnMapReadyCallback,
     GoogleMap.OnMarkerClickListener {
 
     //https://github.com/umano/AndroidSlidingUpPanel
@@ -51,7 +52,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
     }
 
     override fun start() {
-
+        val params: CoordinatorLayout.LayoutParams = dataBinding.appBar.layoutParams as CoordinatorLayout.LayoutParams
+        val behavior = AppBarLayout.Behavior()
+        behavior.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+            override fun canDrag(p0: AppBarLayout): Boolean {
+                return false
+            }
+        })
+        params.behavior = behavior
     }
 
     ///region JinHo 상단 뷰
@@ -194,7 +202,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
         }
         //클릭 했을 때
         marker?.let {
-            if(csBar.visibility == View.GONE) csBar.visibility = View.VISIBLE
+            if (csBar.visibility == View.GONE) csBar.visibility = View.VISIBLE
             when {
                 marker.tag == "GS25" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
