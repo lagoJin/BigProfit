@@ -1,67 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<android.support.design.widget.CoordinatorLayout
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-		<android.support.design.widget.AppBarLayout
-			android:id="@+id/app_bar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-			<android.support.design.widget.CollapsingToolbarLayout
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				app:layout_scrollFlags="exitUntilCollapsed|scroll|snap">
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_scrollFlags="exitUntilCollapsed|scroll|snap">
 
-				<fragment
-					android:id="@+id/google_map"
-					android:name="com.google.android.gms.maps.SupportMapFragment"
-					android:layout_width="match_parent"
-					android:layout_height="300dp" />
+                <fragment
+                    android:id="@+id/google_map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp" />
 
-			</android.support.design.widget.CollapsingToolbarLayout>
+                <!--<ImageView
+                    android:id="@+id/iv_main_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="70dp"
+                    android:background="@drawable/round_background"
+                    android:clickable="true"
+                    android:foreground="?selectableItemBackground"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_my_location_gray_24dp" />-->
 
-		</android.support.design.widget.AppBarLayout>
+                <ImageView
+                    android:id="@+id/iv_main_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/round_background"
+                    android:clickable="true"
+                    android:foreground="?selectableItemBackground"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_search_gray_24dp" />
 
-		<android.support.v4.widget.NestedScrollView
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:fillViewport="true"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            </android.support.design.widget.CollapsingToolbarLayout>
 
-			<LinearLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:orientation="vertical">
+        </android.support.design.widget.AppBarLayout>
 
-				<TextView
-					android:id="@+id/csBar"
-					android:layout_width="match_parent"
-					android:layout_height="40dp"
-					android:gravity="center"
-					android:text="TextView"
-					android:textColor="#FFFFFF"
-					android:textSize="14dp"
-					android:visibility="gone" />
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-				<com.astuetz.PagerSlidingTabStrip
-					android:id="@+id/tabs"
-					android:layout_width="match_parent"
-					android:layout_height="48dp"
-					android:textSize="16dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-				<android.support.v4.view.ViewPager
-					android:id="@+id/viewPager"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:nestedScrollingEnabled="true" />
-			</LinearLayout>
+                <TextView
+                    android:id="@+id/csBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14dp"
+                    android:visibility="gone" />
 
-		</android.support.v4.widget.NestedScrollView>
+                <com.astuetz.PagerSlidingTabStrip
+                    android:id="@+id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:textSize="16dp" />
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="true" />
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
 
 
-	</android.support.design.widget.CoordinatorLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </layout>
