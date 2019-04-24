@@ -182,7 +182,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onMarkerClick(marker: Marker?): Boolean {
         var icon: BitmapDescriptor? = null
-
+        var csColor:Int = R.color.cardview_dark_background
         if (::beforeMarker.isInitialized) {
             when {
                 beforeMarker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
@@ -198,20 +198,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
             when {
                 marker.tag == "GS25" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
-                    csBar.setBackgroundColor(getColor(R.color.gsRed))
+                    csColor = R.color.gsRed
                     //데이터 받고 어댑터 새로그려주기
                 }
                 marker.tag == "CU" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_click)
-                    csBar.setBackgroundColor(getColor(R.color.cuPurple))
+                    csColor = R.color.cuPurple
                 }
                 marker.tag == "세븐일레븐" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_click)
-                    csBar.setBackgroundColor(getColor(R.color.sevenGreen))
+                    csColor = R.color.sevenGreen
                 }
             }
             marker.setIcon(icon)
             dataBinding.csBar.setText(marker.tag.toString())
+            dataBinding.csBar.setBackgroundColor(getColor(csColor))
+            dataBinding.tabs.setIndicatorColorResource(csColor)
+            dataBinding.tabs.setDividerColorResource(csColor)
             beforeMarker = marker
         }
         return true
