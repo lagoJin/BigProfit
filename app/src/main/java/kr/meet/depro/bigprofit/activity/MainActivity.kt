@@ -1,8 +1,9 @@
-package kr.meet.depro.bigprofit
+package kr.meet.depro.bigprofit.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -10,10 +11,11 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
+import android.support.design.widget.AppBarLayout
+import android.support.design.widget.CoordinatorLayout
 import android.support.v4.app.ActivityCompat
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -22,6 +24,8 @@ import com.google.android.gms.maps.model.*
 import com.tedpark.tedpermission.rx2.TedRx2Permission
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
+import kr.meet.depro.bigprofit.model.MarkerItem
+import kr.meet.depro.bigprofit.R
 import kr.meet.depro.bigprofit.adapter.PagerAdapter
 import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
@@ -32,26 +36,41 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
-    OnMapReadyCallback,
-    GoogleMap.OnMarkerClickListener {
+class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), OnMapReadyCallback,
+        GoogleMap.OnMarkerClickListener {
 
     //https://github.com/umano/AndroidSlidingUpPanel
 
     private lateinit var map: GoogleMap
     private val markerList = ArrayList<Marker>()
     private lateinit var beforeMarker: Marker
+    private lateinit var location: Location
 
     private val adapter by lazy { PagerAdapter(supportFragmentManager) }
     private var productList = mutableListOf<Product>()
     override fun initView() {
-        initPermission()
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            initPermission()
+            return
+        }
         initLocation()
         initViewPager()
+
+        dataBinding.ivMainSearch.setOnClickListener {
+            startActivity(Intent(this, SearchActivity::class.java))
+        }
+
     }
 
     override fun start() {
-
+        val params: CoordinatorLayout.LayoutParams = dataBinding.appBar.layoutParams as CoordinatorLayout.LayoutParams
+        val behavior = AppBarLayout.Behavior()
+        behavior.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+            override fun canDrag(p0: AppBarLayout): Boolean {
+                return false
+            }
+        })
+        params.behavior = behavior
     }
 
     ///region JinHo 상단 뷰
@@ -60,37 +79,42 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
         map?.let {
             this.map = it
             map.setOnMarkerClickListener(this)
-            it.isMyLocationEnabled = true
-            it.uiSettings.isMyLocationButtonEnabled = true
+            map.isMyLocationEnabled = true
+            map.uiSettings.isMyLocationButtonEnabled = true
             it.moveCamera(CameraUpdateFactory.newLatLng(LatLng(37.566535, 126.97796919000007)))
             it.animateCamera(CameraUpdateFactory.zoomTo(10f))
+
+            this@MainActivity.map.setOnMyLocationButtonClickListener(object : GoogleMap.OnMyLocationButtonClickListener {
+                override fun onMyLocationButtonClick(): Boolean {
+                    //TODO 마커 새로 그려주기 주변
+                    return false
+                }
+            })
         }
     }
 
     private fun initPermission() {
         if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
         ) {
             CompositeDisposable().add(
-                TedRx2Permission.with(this)
-                    .setRationaleTitle("위치권한").setRationaleMessage("앱을 이용하려면 위치권한이 필요합니다.")
-                    .setPermissions(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                    .request()
-                    .subscribe(
-                        { result ->
-                            if (result.isGranted) {
-                                Toast.makeText(this, "위치권한이 승인 되었습니다.", Toast.LENGTH_SHORT).show()
-
-                            } else {
-                                finish()
-                            }
-                        },
-                        { throwable -> })
+                    TedRx2Permission.with(this)
+                            .setRationaleTitle("위치권한").setRationaleMessage("앱을 이용하려면 위치권한이 필요합니다.")
+                            .setPermissions(
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                            .request()
+                            .subscribe({ result ->
+                                if (result.isGranted) {
+                                    initLocation()
+                                    initViewPager()
+                                } else {
+                                    finish()
+                                }
+                            }, { throwable -> })
             )
         }
 
@@ -98,18 +122,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
 
     private fun initLocation() {
         val mapFragment: SupportMapFragment =
-            supportFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
+                supportFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+                        this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
         ) {
             initPermission()
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 10f, locationListener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 10f, locationListener)
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 7000, 10f, locationListener)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 7000, 10f, locationListener)
         ApiClient.kakaoApi.getMarts().enqueue(object : Callback<Mart> {
             override fun onResponse(call: Call<Mart>, response: Response<Mart>) {
                 if (response.isSuccessful) {
@@ -132,7 +156,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
         override fun onLocationChanged(location: Location?) {
             location?.let {
                 if (::map.isInitialized) {
-                    map.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
+                    this@MainActivity.location = it
+                    map.moveCamera(CameraUpdateFactory.newLatLng(LatLng(it.latitude, it.longitude)))
                     map.animateCamera(CameraUpdateFactory.zoomTo(17f))
                 }
             }
@@ -171,9 +196,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
         }
 
         val marker = map.addMarker(
-            MarkerOptions()
-                .position(position)
-                .icon(icon)
+                MarkerOptions()
+                        .position(position)
+                        .icon(icon)
         )
         marker.tag = type
         markerList.add(marker)
@@ -188,13 +213,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main),
                 beforeMarker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
                 beforeMarker.tag == "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_basic)
                 beforeMarker.tag == "세븐일레븐" -> icon =
-                    BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
+                        BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
             }
             beforeMarker.setIcon(icon)
         }
         //클릭 했을 때
         marker?.let {
-            if(csBar.visibility == View.GONE) csBar.visibility = View.VISIBLE
+            if (csBar.visibility == View.GONE) csBar.visibility = View.VISIBLE
             when {
                 marker.tag == "GS25" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
