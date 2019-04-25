@@ -32,12 +32,13 @@ import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
 import kr.meet.depro.bigprofit.model.Mart
 import kr.meet.depro.bigprofit.model.Product
+import kr.meet.depro.bigprofit.model.SearchItem
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), OnMapReadyCallback,
-        GoogleMap.OnMarkerClickListener {
+    GoogleMap.OnMarkerClickListener {
 
     //https://github.com/umano/AndroidSlidingUpPanel
 
@@ -48,8 +49,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
     private val adapter by lazy { PagerAdapter(supportFragmentManager) }
     private var productList = mutableListOf<Product>()
+    private val REQUEST_SEARCH = 1000
     override fun initView() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             initPermission()
             return
         }
@@ -57,7 +63,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         initViewPager()
 
         dataBinding.ivMainSearch.setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
+            startActivityForResult(Intent(this, SearchActivity::class.java), REQUEST_SEARCH)
         }
 
     }
@@ -84,37 +90,49 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             it.moveCamera(CameraUpdateFactory.newLatLng(LatLng(37.566535, 126.97796919000007)))
             it.animateCamera(CameraUpdateFactory.zoomTo(10f))
 
-            this@MainActivity.map.setOnMyLocationButtonClickListener(object : GoogleMap.OnMyLocationButtonClickListener {
-                override fun onMyLocationButtonClick(): Boolean {
-                    //TODO 마커 새로 그려주기 주변
-                    return false
-                }
-            })
+            this@MainActivity.map.setOnMyLocationButtonClickListener {
+                ApiClient.kakaoApi.getMarts().enqueue(object : Callback<Mart> {
+                    override fun onResponse(call: Call<Mart>, response: Response<Mart>) {
+                        if (response.isSuccessful) {
+                            Log.d("마트", response.body().toString())
+                            response.body()?.let {
+                                setMarkerItem(it.documents)
+                            }
+
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Mart>, t: Throwable) {
+
+                    }
+                })
+                false
+            }
         }
     }
 
     private fun initPermission() {
         if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             CompositeDisposable().add(
-                    TedRx2Permission.with(this)
-                            .setRationaleTitle("위치권한").setRationaleMessage("앱을 이용하려면 위치권한이 필요합니다.")
-                            .setPermissions(
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                            )
-                            .request()
-                            .subscribe({ result ->
-                                if (result.isGranted) {
-                                    initLocation()
-                                    initViewPager()
-                                } else {
-                                    finish()
-                                }
-                            }, { throwable -> })
+                TedRx2Permission.with(this)
+                    .setRationaleTitle("위치권한").setRationaleMessage("앱을 이용하려면 위치권한이 필요합니다.")
+                    .setPermissions(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                    .request()
+                    .subscribe({ result ->
+                        if (result.isGranted) {
+                            initLocation()
+                            initViewPager()
+                        } else {
+                            finish()
+                        }
+                    }, { throwable -> })
             )
         }
 
@@ -122,13 +140,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
     private fun initLocation() {
         val mapFragment: SupportMapFragment =
-                supportFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
+            supportFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (ActivityCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             initPermission()
         }
@@ -177,6 +195,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     }
 
     fun setMarkerItem(list: List<Mart.Document>) {
+        map.clear()
         val gsList = list.filter { it.place_name.contains("GS25") }
         val cuList = list.filter { it.place_name.contains("CU") }
         val sevenList = list.filter { it.place_name.contains("세븐일레븐") }
@@ -196,9 +215,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         }
 
         val marker = map.addMarker(
-                MarkerOptions()
-                        .position(position)
-                        .icon(icon)
+            MarkerOptions()
+                .position(position)
+                .icon(icon)
         )
         marker.tag = type
         markerList.add(marker)
@@ -213,7 +232,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
                 beforeMarker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
                 beforeMarker.tag == "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_basic)
                 beforeMarker.tag == "세븐일레븐" -> icon =
-                        BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
+                    BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
             }
             beforeMarker.setIcon(icon)
         }
@@ -240,6 +259,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             beforeMarker = marker
         }
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_SEARCH) {
+            if (resultCode == RESULT_OK) {
+                //TODO 검색리스트 뿌려주기
+                //val list = data!!.getParcelableArrayListExtra<SearchItem>("list")
+            }
+        }
     }
 
     //endregion
