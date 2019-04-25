@@ -26,18 +26,17 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import kr.meet.depro.bigprofit.R
 import kr.meet.depro.bigprofit.adapter.PagerAdapter
+import kr.meet.depro.bigprofit.api.APIInterface
 import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
 import kr.meet.depro.bigprofit.model.MarkerItem
 import kr.meet.depro.bigprofit.model.Mart
 import kr.meet.depro.bigprofit.model.Product
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kr.meet.depro.bigprofit.api.APIInterface
-import kr.meet.depro.bigprofit.model.MarkerItem
-import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
