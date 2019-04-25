@@ -5,6 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="backGroundLightGray">#ececec</color>
     <!--편의점 색조합-->
+    <color name="lightGray">#666666</color>
     <color name="emartYellow">#ffb717</color>
     <color name="cuPurple">#8c31aa</color>
     <color name="ministopBlue">#15449d</color>

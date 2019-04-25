@@ -24,17 +24,21 @@ import com.google.android.gms.maps.model.*
 import com.tedpark.tedpermission.rx2.TedRx2Permission
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
-import kr.meet.depro.bigprofit.model.MarkerItem
 import kr.meet.depro.bigprofit.R
 import kr.meet.depro.bigprofit.adapter.PagerAdapter
+import kr.meet.depro.bigprofit.api.APIInterface
 import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
+import kr.meet.depro.bigprofit.model.MarkerItem
 import kr.meet.depro.bigprofit.model.Mart
 import kr.meet.depro.bigprofit.model.Product
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener {
@@ -47,7 +51,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     private lateinit var location: Location
 
     private val adapter by lazy { PagerAdapter(supportFragmentManager) }
-    private var productList = mutableListOf<Product>()
+    private var productList: ArrayList<Product> = arrayListOf()
     override fun initView() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             initPermission()
@@ -250,10 +254,33 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     //region Inhan 하단 뷰
     private fun initViewPager() {
         dataBinding.viewPager.adapter = adapter
-        dataBinding.viewPager.offscreenPageLimit = 3
+        dataBinding.viewPager.offscreenPageLimit = 2
         dataBinding.tabs.shouldExpand = true
         dataBinding.tabs.setViewPager(viewPager)
     }
+    var BaseURL:String ="https://jsonplaceholder.typicode.com"
+    var retrofit = Retrofit.Builder()
+        .baseUrl(BaseURL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .client(OkHttpClient())
+        .build()
+    var server = retrofit.create(APIInterface::class.java)
+
+    fun productRequest(store:String, count:Int, event:Int, page:Int){
+        server?.getRequest(store,count,event,page)?.enqueue(object : Callback<ArrayList<Product>>{
+            override fun onFailure(call: Call<ArrayList<Product>>, t: Throwable) {
+                Log.d("retrofit","실패")
+            }
+
+            override fun onResponse(call: Call<ArrayList<Product>>, response: Response<ArrayList<Product>>) {
+                Log.d("retrofit","성공")
+                if(response.isSuccessful && !response.body().isNullOrEmpty()){
+                    productList.addAll(response.body()!!)
+                }
+            }
+        })
+    }
+
 
     //endregion
 }
