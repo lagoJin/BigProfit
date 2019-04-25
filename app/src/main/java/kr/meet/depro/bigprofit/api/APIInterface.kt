@@ -1,19 +1,22 @@
 package kr.meet.depro.bigprofit.api
 
 import kr.meet.depro.bigprofit.model.Product
-import retrofit2.http.FormUrlEncoded
+import kr.meet.depro.bigprofit.model.SearchItem
+import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
-/*
-data class post(var userId:String,var id:String,var title:String,var body:String)*/
 interface APIInterface {
 
-    @FormUrlEncoded
+/*
+data class post(var userId:String,var id:String,var title:String,var body:String)*/
+
+    @GET("search")
+    fun searchItem(@Query("q") name: String): Call<List<SearchItem>>
     @GET("posts")
     fun getRequest(@Query("store") store: String,
                    @Query("count") count: Int,
                    @Query("event") event: Int,
-                   @Query("page") page: Int): retrofit2.Call<ArrayList<Product>>
+                   @Query("page") page: Int): Call<ArrayList<Product>>
 
 /*    fun getRequest(@Query("userId") userId: String,
                    @Query("id") id: String,

@@ -1,6 +1,5 @@
 package kr.meet.depro.bigprofit.api
 
-import kr.meet.depro.bigprofit.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,7 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class ApiClient {
 
     companion object {
-        private val BASE_URL = "https://dapi.kakao.com/v2/local/search/"
+        private val KAKAO_BASE_URL = "https://dapi.kakao.com/v2/local/search/"
+        private val BIG_PROFIT_BASE_URL = ""
 
         private val interceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -26,9 +26,17 @@ class ApiClient {
         }.build().create(APIInterface::class.java)*/
 
         val kakaoApi = Retrofit.Builder().apply {
-            baseUrl(BASE_URL )
+            baseUrl(KAKAO_BASE_URL)
             addConverterFactory(GsonConverterFactory.create())
             client(client)
         }.build().create(KakaoInterface::class.java)
+
+        val bigPrfitApi = Retrofit.Builder().apply {
+            baseUrl(BIG_PROFIT_BASE_URL)
+            addConverterFactory(GsonConverterFactory.create())
+            client(client)
+        }.build().create(APIInterface::class.java)
+
+
     }
 }

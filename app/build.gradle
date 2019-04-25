@@ -62,6 +62,9 @@ dependencies {
     implementation 'com.miguelcatalan:materialsearchview:1.4.0'
     implementation 'br.com.mauker.materialsearchview:materialsearchview:1.2.3'
 
+    //rxbiding
+    implementation 'com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha2'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
