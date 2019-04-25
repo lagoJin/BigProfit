@@ -229,7 +229,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onMarkerClick(marker: Marker?): Boolean {
         var icon: BitmapDescriptor? = null
-        var csColor:Int = R.color.cardview_dark_background
+        var csColor: Int = R.color.cardview_dark_background
         if (::beforeMarker.isInitialized) {
             when {
                 beforeMarker.tag == "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
@@ -258,7 +258,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
                 }
             }
             marker.setIcon(icon)
-            dataBinding.csBar.setText(marker.tag.toString())
+            dataBinding.csBar.text = marker.tag.toString()
             dataBinding.csBar.setBackgroundColor(getColor(csColor))
             dataBinding.tabs.setIndicatorColorResource(csColor)
             dataBinding.tabs.setDividerColorResource(csColor)
@@ -276,23 +276,25 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         dataBinding.tabs.shouldExpand = true
         dataBinding.tabs.setViewPager(viewPager)
     }
-    var BaseURL:String ="https://jsonplaceholder.typicode.com"
+
+    var BaseURL: String = "https://jsonplaceholder.typicode.com"
     var retrofit = Retrofit.Builder()
         .baseUrl(BaseURL)
         .addConverterFactory(GsonConverterFactory.create())
         .client(OkHttpClient())
         .build()
-    var server = retrofit.create(APIInterface::class.java)
+    val server = retrofit.create(APIInterface::class.java)
 
-    fun productRequest(store:String, count:Int, event:Int, page:Int){
-        server?.getRequest(store,count,event,page)?.enqueue(object : Callback<ArrayList<Product>>{
+    fun productRequest(store: String, count: Int, event: Int, page: Int) {
+        server.getRequest(store, count, event, page).enqueue(object : Callback<ArrayList<Product>> {
             override fun onFailure(call: Call<ArrayList<Product>>, t: Throwable) {
-                Log.d("retrofit","실패")
+                Log.d("retrofit", "실패")
             }
 
             override fun onResponse(call: Call<ArrayList<Product>>, response: Response<ArrayList<Product>>) {
-                Log.d("retrofit","성공")
-                if(response.isSuccessful && !response.body().isNullOrEmpty()){
+                Log.d("retrofit", "성공")
+                if (response.isSuccessful && !response.body().isNullOrEmpty()) {
+                    productList.clear()
                     productList.addAll(response.body()!!)
                 }
             }
