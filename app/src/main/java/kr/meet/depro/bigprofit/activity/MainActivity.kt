@@ -261,16 +261,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         return true
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_SEARCH) {
-            if (resultCode == RESULT_OK) {
-                //TODO 검색리스트 뿌려주기
-                //val list = data!!.getParcelableArrayListExtra<SearchItem>("list")
-            }
-        }
-    }
-
     //endregion
 
     //region Inhan 하단 뷰
