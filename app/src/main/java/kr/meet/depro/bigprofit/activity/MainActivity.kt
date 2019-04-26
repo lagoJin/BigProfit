@@ -30,6 +30,8 @@ import kr.meet.depro.bigprofit.api.APIInterface
 import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
+import kr.meet.depro.bigprofit.fragment.list1
+import kr.meet.depro.bigprofit.fragment.list2
 import kr.meet.depro.bigprofit.model.MarkerItem
 import kr.meet.depro.bigprofit.model.Mart
 import kr.meet.depro.bigprofit.model.Product
@@ -51,8 +53,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     private lateinit var location: Location
 
     private val adapter by lazy { PagerAdapter(supportFragmentManager) }
-    private var productList: ArrayList<Product> = arrayListOf()
+
     private val REQUEST_SEARCH = 1000
+
+    var list1Fragment = supportFragmentManager.findFragmentById(R.id.viewPager) as list1
+    var list2Fragment = supportFragmentManager.findFragmentById(R.id.viewPager) as list2
     override fun initView() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -263,6 +268,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             dataBinding.tabs.setIndicatorColorResource(csColor)
             dataBinding.tabs.setDividerColorResource(csColor)
             beforeMarker = marker
+
+            //마커 클릭시 해당 편의점 상품 리스트만 나타냄
+            list1Fragment.productList.clear()
+            list1Fragment.store = marker.tag.toString()
+            productRequest(marker.tag.toString(),30,1,1)
+            list1Fragment.adapter.notifyDataSetChanged()
+            list1Fragment.page = 2
+
+            list2Fragment.productList.clear()
+            list2Fragment.store = marker.tag.toString()
+            productRequest(marker.tag.toString(),30,2,1)
+            list2Fragment.adapter.notifyDataSetChanged()
+            list1Fragment.page = 2
         }
         return true
     }
@@ -286,6 +304,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     val server = retrofit.create(APIInterface::class.java)
 
     fun productRequest(store: String, count: Int, event: Int, page: Int) {
+
         server.getRequest(store, count, event, page).enqueue(object : Callback<ArrayList<Product>> {
             override fun onFailure(call: Call<ArrayList<Product>>, t: Throwable) {
                 Log.d("retrofit", "실패")
@@ -294,8 +313,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             override fun onResponse(call: Call<ArrayList<Product>>, response: Response<ArrayList<Product>>) {
                 Log.d("retrofit", "성공")
                 if (response.isSuccessful && !response.body().isNullOrEmpty()) {
-                    productList.clear()
-                    productList.addAll(response.body()!!)
+                    if(event == 1) list1Fragment.productList.addAll(response.body()!!)
+                    else list2Fragment.productList.addAll(response.body()!!)
                 }
             }
         })
