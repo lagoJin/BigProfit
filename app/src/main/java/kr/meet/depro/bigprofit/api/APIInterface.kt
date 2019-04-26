@@ -12,7 +12,7 @@ data class post(var userId:String,var id:String,var title:String,var body:String
 
     @GET("search")
     fun searchItem(@Query("q") name: String): Call<List<SearchItem>>
-    @GET("posts")
+    @GET("products")
     fun getRequest(@Query("store") store: String,
                    @Query("count") count: Int,
                    @Query("event") event: Int,

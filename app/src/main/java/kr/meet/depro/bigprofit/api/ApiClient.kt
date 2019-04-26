@@ -9,7 +9,7 @@ class ApiClient {
 
     companion object {
         private val KAKAO_BASE_URL = "https://dapi.kakao.com/v2/local/search/"
-        private val BIG_PROFIT_BASE_URL = ""
+        private val BIG_PROFIT_BASE_URL = "https://kugradecrawler.run.goorm.io/"
 
         private val interceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -36,6 +36,8 @@ class ApiClient {
             addConverterFactory(GsonConverterFactory.create())
             client(client)
         }.build().create(APIInterface::class.java)
+
+
 
 
     }

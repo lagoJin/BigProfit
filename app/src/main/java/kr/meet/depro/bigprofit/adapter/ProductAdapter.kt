@@ -31,12 +31,14 @@ class ProductAdapter(var products: ArrayList<Product>) : RecyclerView.Adapter<Pr
         products[position].let { product ->
             with(productViewHolder) {
                 pdName.text = product.name
-                price.text = product.price.toString()+"원"
+                price.text = product.price.toString()
                 csName.text = product.storeName
                 when (csName.text) {
-                    "GS25" -> csName.setBackgroundColor(ContextCompat.getColor(csName.context, R.color.gsRed))
-                    "CU" -> csName.setBackgroundColor(ContextCompat.getColor(csName.context, R.color.cuPurple))
-                    "7-ELEVEN" -> csName.setBackgroundColor(ContextCompat.getColor(csName.context, R.color.sevenGreen))
+                    "GS25(지에스25)" -> csName.setBackgroundColor(ContextCompat.getColor(csName.context, R.color.gsRed))
+                    "CU(씨유)" -> csName.setBackgroundColor(ContextCompat.getColor(csName.context, R.color.cuPurple))
+                    "7-ELEVEN(세븐일레븐)" -> csName.setBackgroundColor(ContextCompat.getColor(csName.context, R.color.sevenGreen))
+                    "EMART24(이마트24)" -> csName.setBackgroundColor(ContextCompat.getColor(csName.context, R.color.emartYellow))
+                    "MINISTOP(미니스톱)" -> csName.setBackgroundColor(ContextCompat.getColor(csName.context, R.color.ministopBlue))
                 }
                 Glide.with(itemView).load(product.imageUrl).into(itemView.imageView)
 

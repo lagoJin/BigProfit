@@ -26,7 +26,6 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import kr.meet.depro.bigprofit.R
 import kr.meet.depro.bigprofit.adapter.PagerAdapter
-import kr.meet.depro.bigprofit.api.APIInterface
 import kr.meet.depro.bigprofit.api.ApiClient
 import kr.meet.depro.bigprofit.base.BaseActivity
 import kr.meet.depro.bigprofit.databinding.ActivityMainBinding
@@ -34,13 +33,9 @@ import kr.meet.depro.bigprofit.fragment.list1
 import kr.meet.depro.bigprofit.fragment.list2
 import kr.meet.depro.bigprofit.model.MarkerItem
 import kr.meet.depro.bigprofit.model.Mart
-import kr.meet.depro.bigprofit.model.Product
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), OnMapReadyCallback,
     GoogleMap.OnMarkerClickListener {
@@ -56,8 +51,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
     private val REQUEST_SEARCH = 1000
 
-    var list1Fragment = supportFragmentManager.findFragmentById(R.id.viewPager) as list1
-    var list2Fragment = supportFragmentManager.findFragmentById(R.id.viewPager) as list2
+    lateinit var list1Fragment:list1
+    lateinit var list2Fragment:list2
     override fun initView() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -85,6 +80,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             }
         })
         params.behavior = behavior
+
     }
 
     ///region JinHo 상단 뷰
@@ -207,10 +203,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         val gsList = list.filter { it.place_name.contains("GS25") }
         val cuList = list.filter { it.place_name.contains("CU") }
         val sevenList = list.filter { it.place_name.contains("세븐일레븐") }
+        val emartList = list.filter { it.place_name.contains("이마트24") }
+        val miniList = list.filter { it.place_name.contains("미니스탑") }
 
         gsList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "GS25") }
         cuList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "CU") }
         sevenList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "세븐일레븐") }
+        emartList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "이마트24") }
+        miniList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "미니스탑") }
     }
 
     private fun addMarker(markerItem: MarkerItem, type: String) {
@@ -220,6 +220,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
             "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_basic)
             "세븐일레븐" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
+            "이마트24" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_emart_basic)
+            "미니스탑" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_mini_basic)
         }
 
         val marker = map.addMarker(
@@ -241,25 +243,44 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
                 beforeMarker.tag == "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_basic)
                 beforeMarker.tag == "세븐일레븐" -> icon =
                     BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
+                beforeMarker.tag == "이마트24" -> icon =
+                    BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_emart_basic)
+                beforeMarker.tag == "미니스탑" -> icon =
+                    BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_mini_basic)
+
             }
             beforeMarker.setIcon(icon)
         }
         //클릭 했을 때
         marker?.let {
+            var csName = ""
             if (csBar.visibility == View.GONE) csBar.visibility = View.VISIBLE
             when {
                 marker.tag == "GS25" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_click)
                     csColor = R.color.gsRed
                     //데이터 받고 어댑터 새로그려주기
+                    csName = "GS25(지에스25)"
                 }
                 marker.tag == "CU" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_click)
                     csColor = R.color.cuPurple
+                    csName = "CU(씨유)"
                 }
                 marker.tag == "세븐일레븐" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_click)
                     csColor = R.color.sevenGreen
+                    csName = "7-ELEVEN(세븐일레븐)"
+                }
+                marker.tag == "이마트24" -> {
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_emart_click)
+                    csColor = R.color.emartYellow
+                    csName = "EMART24(이마트24)"
+                }
+                marker.tag == "미니스탑" -> {
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_mini_click)
+                    csColor = R.color.ministopBlue
+                    csName = "MINISTOP(미니스톱)"
                 }
             }
             marker.setIcon(icon)
@@ -271,16 +292,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
             //마커 클릭시 해당 편의점 상품 리스트만 나타냄
             list1Fragment.productList.clear()
-            list1Fragment.store = marker.tag.toString()
-            productRequest(marker.tag.toString(),30,1,1)
-            list1Fragment.adapter.notifyDataSetChanged()
+            list1Fragment.store = csName
+            list1Fragment.productRequest(csName,30,1,1)
             list1Fragment.page = 2
 
             list2Fragment.productList.clear()
-            list2Fragment.store = marker.tag.toString()
-            productRequest(marker.tag.toString(),30,2,1)
-            list2Fragment.adapter.notifyDataSetChanged()
-            list1Fragment.page = 2
+            list2Fragment.store = csName
+            list2Fragment.productRequest(csName,30,2,1)
+            list2Fragment.page = 2
+            adapter.notifyDataSetChanged()
         }
         return true
     }
@@ -289,36 +309,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
 
     //region Inhan 하단 뷰
     private fun initViewPager() {
+        list1Fragment = adapter.page1 as list1
+        list2Fragment = adapter.page2 as list2
         dataBinding.viewPager.adapter = adapter
         dataBinding.viewPager.offscreenPageLimit = 2
         dataBinding.tabs.shouldExpand = true
         dataBinding.tabs.setViewPager(viewPager)
+        adapter.notifyDataSetChanged()
+
     }
 
-    var BaseURL: String = "https://jsonplaceholder.typicode.com"
-    var retrofit = Retrofit.Builder()
-        .baseUrl(BaseURL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(OkHttpClient())
-        .build()
-    val server = retrofit.create(APIInterface::class.java)
 
-    fun productRequest(store: String, count: Int, event: Int, page: Int) {
 
-        server.getRequest(store, count, event, page).enqueue(object : Callback<ArrayList<Product>> {
-            override fun onFailure(call: Call<ArrayList<Product>>, t: Throwable) {
-                Log.d("retrofit", "실패")
-            }
-
-            override fun onResponse(call: Call<ArrayList<Product>>, response: Response<ArrayList<Product>>) {
-                Log.d("retrofit", "성공")
-                if (response.isSuccessful && !response.body().isNullOrEmpty()) {
-                    if(event == 1) list1Fragment.productList.addAll(response.body()!!)
-                    else list2Fragment.productList.addAll(response.body()!!)
-                }
-            }
-        })
-    }
 
 
     //endregion

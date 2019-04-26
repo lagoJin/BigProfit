@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="backGroundLightGray">#ececec</color>
+    <color name="pdNameLightGray">#939393</color>
+    <color name="priceGray">#484646</color>
+
     <!--편의점 색조합-->
     <color name="lightGray">#666666</color>
     <color name="emartYellow">#ffb717</color>
