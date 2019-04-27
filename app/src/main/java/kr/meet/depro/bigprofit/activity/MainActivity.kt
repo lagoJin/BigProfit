@@ -94,11 +94,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             map.setOnMarkerClickListener(this)
             map.isMyLocationEnabled = true
             map.uiSettings.isMyLocationButtonEnabled = true
-            it.moveCamera(CameraUpdateFactory.newLatLng(LatLng(37.566535, 126.97796919000007)))
+            if(::location.isInitialized) {
+                it.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
+            }
+            else{
+                it.moveCamera(CameraUpdateFactory.newLatLng(LatLng(127.024612, 37.532600)))
+            }
             it.animateCamera(CameraUpdateFactory.zoomTo(10f))
 
             this@MainActivity.map.setOnMyLocationButtonClickListener {
-                ApiClient.kakaoApi.getMarts().enqueue(object : Callback<Mart> {
+                ApiClient.kakaoApi.getMarts("CS2",location.latitude.toFloat(),location.longitude.toFloat()).enqueue(object : Callback<Mart> {
                     override fun onResponse(call: Call<Mart>, response: Response<Mart>) {
                         if (response.isSuccessful) {
                             Log.d("마트", response.body().toString())
@@ -159,21 +164,42 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 7000, 10f, locationListener)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 7000, 10f, locationListener)
-        ApiClient.kakaoApi.getMarts().enqueue(object : Callback<Mart> {
-            override fun onResponse(call: Call<Mart>, response: Response<Mart>) {
-                if (response.isSuccessful) {
-                    Log.d("마트", response.body().toString())
-                    response.body()?.let {
-                        setMarkerItem(it.documents)
+        if(::location.isInitialized) {
+            ApiClient.kakaoApi.getMarts("CS2", location.longitude.toFloat(), location.latitude.toFloat())
+                .enqueue(object : Callback<Mart> {
+                    override fun onResponse(call: Call<Mart>, response: Response<Mart>) {
+                        if (response.isSuccessful) {
+                            Log.d("마트", response.body().toString())
+                            response.body()?.let {
+                                setMarkerItem(it.documents)
+                            }
+
+                        }
                     }
 
-                }
-            }
+                    override fun onFailure(call: Call<Mart>, t: Throwable) {
 
-            override fun onFailure(call: Call<Mart>, t: Throwable) {
+                    }
+                })
+        }
+        else{
+            ApiClient.kakaoApi.getMarts()
+                .enqueue(object : Callback<Mart> {
+                    override fun onResponse(call: Call<Mart>, response: Response<Mart>) {
+                        if (response.isSuccessful) {
+                            Log.d("마트", response.body().toString())
+                            response.body()?.let {
+                                setMarkerItem(it.documents)
+                            }
 
-            }
-        })
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Mart>, t: Throwable) {
+
+                    }
+                })
+        }
     }
 
     private val locationListener = object : LocationListener {
@@ -222,7 +248,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         when (type) {
             "GS25" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_gs_basic)
             "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_basic)
-            "세븐일레븐" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
+            "세븐" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
             "이마트24" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_emart_basic)
             "미니스톱" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_mini_basic)
         }
@@ -280,7 +306,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
                     csColor = R.color.emartYellow
                     csName = "EMART24(이마트24)"
                 }
-                marker.tag == "미니스탑" -> {
+                marker.tag == "미니스톱" -> {
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_mini_click)
                     csColor = R.color.ministopBlue
                     csName = "MINISTOP(미니스톱)"

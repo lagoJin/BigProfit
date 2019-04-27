@@ -1,7 +1,7 @@
 package kr.meet.depro.bigprofit.activity
 
+import android.support.v7.widget.GridLayoutManager
 import android.text.Editable
-import android.text.TextWatcher
 import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -24,6 +24,8 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>(R.layout.activity_sea
     override fun initView() {
         dataBinding.ivSearchBack.setOnClickListener { finish() }
         dataBinding.ivSearchClose.setOnClickListener { dataBinding.etSearchText.text = "" as Editable }
+
+        dataBinding.rvSearchItem.layoutManager = GridLayoutManager(this, 2)
 
         val searchAdapter = SearchAdapter(list)
         dataBinding.rvSearchItem.adapter = searchAdapter

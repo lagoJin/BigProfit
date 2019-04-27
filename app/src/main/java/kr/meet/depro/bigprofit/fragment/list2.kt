@@ -20,7 +20,7 @@ import retrofit2.Response
 class list2 : Fragment() {
     var productList: ArrayList<Product> = arrayListOf()
     var store = ""
-    var count = 0
+    var count = 30
     val event = 2
     var page = 1
     var adapter = ProductAdapter(productList)
@@ -50,19 +50,37 @@ class list2 : Fragment() {
     }
     fun productRequest(store: String, count: Int, event: Int, page: Int) {
 
-        ApiClient.bigPrfitApi.getRequest(store, count, event, page).enqueue(object : Callback<ArrayList<Product>> {
-            override fun onFailure(call: Call<ArrayList<Product>>, t: Throwable) {
-                Log.d("retrofit", "실패")
-            }
-
-            override fun onResponse(call: Call<ArrayList<Product>>, response: Response<ArrayList<Product>>) {
-                Log.d("retrofit", "성공")
-                if (response.isSuccessful && !response.body().isNullOrEmpty()) {
-                    if(event == 1) productList.addAll(response.body()!!)
-                    else productList.addAll(response.body()!!)
-                    adapter.notifyDataSetChanged()
+        if (store.isEmpty()) {
+            ApiClient.bigPrfitApi.getRequest(count, event, page).enqueue(object : Callback<ArrayList<Product>> {
+                override fun onFailure(call: Call<ArrayList<Product>>, t: Throwable) {
+                    Log.d("retrofit", "실패")
                 }
-            }
-        })
+
+                override fun onResponse(call: Call<ArrayList<Product>>, response: Response<ArrayList<Product>>) {
+                    Log.d("retrofit", "성공")
+                    if (response.isSuccessful && !response.body().isNullOrEmpty()) {
+                        if (event == 1) productList.addAll(response.body()!!)
+                        else productList.addAll(response.body()!!)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            })
+        }
+        else{
+            ApiClient.bigPrfitApi.getStoreRequest(store,count, event, page).enqueue(object : Callback<ArrayList<Product>> {
+                override fun onFailure(call: Call<ArrayList<Product>>, t: Throwable) {
+                    Log.d("retrofit", "실패")
+                }
+
+                override fun onResponse(call: Call<ArrayList<Product>>, response: Response<ArrayList<Product>>) {
+                    Log.d("retrofit", "성공")
+                    if (response.isSuccessful && !response.body().isNullOrEmpty()) {
+                        if (event == 1) productList.addAll(response.body()!!)
+                        else productList.addAll(response.body()!!)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            })
+        }
     }
 }

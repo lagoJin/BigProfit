@@ -8,8 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class ApiClient {
 
     companion object {
-        private val KAKAO_BASE_URL = "https://dapi.kakao.com/v2/local/search/"
-        private val BIG_PROFIT_BASE_URL = "https://bigprofit.run.goorm.io/"
+        private val KAKAO_BASE_URL = "http://dapi.kakao.com/v2/local/search/"
+        private val BIG_PROFIT_BASE_URL = "http://192.168.43.214:8080/"
 
         private val interceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY

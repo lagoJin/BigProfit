@@ -13,11 +13,14 @@ data class post(var userId:String,var id:String,var title:String,var body:String
     @GET("search")
     fun searchItem(@Query("q") name: String): Call<List<SearchItem>>
     @GET("products")
-    fun getRequest(@Query("store") store: String,
+    fun getRequest(@Query("count") count: Int,
+                   @Query("event") event: Int,
+                   @Query("page") page: Int): Call<ArrayList<Product>>
+    @GET("products")
+    fun getStoreRequest(@Query("store") store: String,
                    @Query("count") count: Int,
                    @Query("event") event: Int,
                    @Query("page") page: Int): Call<ArrayList<Product>>
-
 /*    fun getRequest(@Query("userId") userId: String,
                    @Query("id") id: String,
                    @Query("title") title: String,
