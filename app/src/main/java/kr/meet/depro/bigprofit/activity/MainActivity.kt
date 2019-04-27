@@ -54,6 +54,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     lateinit var list1Fragment:list1
     lateinit var list2Fragment:list2
     override fun initView() {
+        var intent = Intent(this,SplashActivity::class.java)
+        startActivity(intent)
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -72,6 +74,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     }
 
     override fun start() {
+
         val params: CoordinatorLayout.LayoutParams = dataBinding.appBar.layoutParams as CoordinatorLayout.LayoutParams
         val behavior = AppBarLayout.Behavior()
         behavior.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
@@ -204,13 +207,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         val cuList = list.filter { it.place_name.contains("CU") }
         val sevenList = list.filter { it.place_name.contains("세븐일레븐") }
         val emartList = list.filter { it.place_name.contains("이마트24") }
-        val miniList = list.filter { it.place_name.contains("미니스탑") }
+        val miniList = list.filter { it.place_name.contains("미니스톱") }
 
         gsList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "GS25") }
         cuList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "CU") }
         sevenList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "세븐일레븐") }
         emartList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "이마트24") }
-        miniList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "미니스탑") }
+        miniList.forEach { addMarker(MarkerItem(it.y.toDouble(), it.x.toDouble()), "미니스톱") }
     }
 
     private fun addMarker(markerItem: MarkerItem, type: String) {
@@ -221,7 +224,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             "CU" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_cu_basic)
             "세븐일레븐" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
             "이마트24" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_emart_basic)
-            "미니스탑" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_mini_basic)
+            "미니스톱" -> icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_mini_basic)
         }
 
         val marker = map.addMarker(
@@ -245,7 +248,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
                     BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_seven_basic)
                 beforeMarker.tag == "이마트24" -> icon =
                     BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_emart_basic)
-                beforeMarker.tag == "미니스탑" -> icon =
+                beforeMarker.tag == "미니스톱" -> icon =
                     BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_mini_basic)
 
             }
